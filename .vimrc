@@ -14,9 +14,11 @@ Plug 'Shougo/deoplete.nvim'
 Plug 'tomtom/tcomment_vim'
 Plug 'itchyny/lightline.vim'
 Plug 'mhinz/vim-signify'
+Plug 'mhartington/oceanic-next'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'Quramy/tsuquyomi'
 Plug 'rust-lang/rust.vim'
+Plug 'racer-rust/vim-racer'
 Plug 'liuchengxu/space-vim-dark'
 call plug#end()
 
@@ -26,10 +28,18 @@ syntax enable
 if (has("termguicolors"))
   set termguicolors
 endif
+" let g:oceanic_next_terminal_bold = 1
+" let g:oceanic_next_terminal_italic = 1
+"
+" colorscheme OceanicNext
 
 color space-vim-dark
 
 let g:javascript_plugin_jsdoc = 1
+
+" next two lines are for autocompletion in rust
+set hidden
+let g:racer_cmd = "~/.cargo/bin/racer"
 
 syntax enable " enable syntax processing
 set tabstop=2 " number of visual spaces per TAB
