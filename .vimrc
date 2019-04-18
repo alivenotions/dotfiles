@@ -37,8 +37,10 @@ let g:racer_cmd = "~/.cargo/bin/racer"
 
 " netrw settings
 let g:netrw_browse_split=2
-let g:netrw_winsize=20
 let g:netrw_banner=0
+let g:netrw_altv=1
+let g:netrw_alto=1
+let g:netrw_liststyle=3
 
 syntax enable " enable syntax processing
 set tabstop=2 " number of visual spaces per TAB
