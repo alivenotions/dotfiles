@@ -28,18 +28,17 @@ syntax enable
 if (has("termguicolors"))
   set termguicolors
 endif
-" let g:oceanic_next_terminal_bold = 1
-" let g:oceanic_next_terminal_italic = 1
-"
-" colorscheme OceanicNext
 
 color space-vim-dark
 
 let g:javascript_plugin_jsdoc = 1
-
-" next two lines are for autocompletion in rust
 set hidden
 let g:racer_cmd = "~/.cargo/bin/racer"
+
+" netrw settings
+let g:netrw_browse_split=2
+let g:netrw_winsize=20
+let g:netrw_banner=0
 
 syntax enable " enable syntax processing
 set tabstop=2 " number of visual spaces per TAB
@@ -67,6 +66,7 @@ set incsearch " search as characters are entered
 set hlsearch " highlight matches
 
 " turn off search highlight
-nnoremap <leader><space> :nohlsearch<CR>
+nnoremap ,<space> :nohlsearch<CR>
+nnoremap .. :w<CR>
 
 map <CR> o<Esc>k
