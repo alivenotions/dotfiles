@@ -20,6 +20,8 @@ Plug 'Quramy/tsuquyomi'
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
 Plug 'liuchengxu/space-vim-dark'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 call plug#end()
 
 " Theme
@@ -69,6 +71,8 @@ set hlsearch " highlight matches
 
 " turn off search highlight
 nnoremap ,<space> :nohlsearch<CR>
-nnoremap .. :w<CR>
+nnoremap ,, :w<CR>
+nnoremap ,F :GFiles<CR>
+nnoremap ,f :Files<CR>
 
 map <CR> o<Esc>k
