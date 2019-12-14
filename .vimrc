@@ -31,7 +31,8 @@ if (has("termguicolors"))
   set termguicolors
 endif
 
-color space-vim-dark
+" color space-vim-dark
+colorscheme sublimemonokai
 
 let g:javascript_plugin_jsdoc = 1
 set hidden
@@ -72,7 +73,10 @@ set hlsearch " highlight matches
 " turn off search highlight
 nnoremap ,<space> :nohlsearch<CR>
 nnoremap ,, :w<CR>
-nnoremap ,F :GFiles<CR>
-nnoremap ,f :Files<CR>
+nnoremap <space>F :GFiles<CR>
+nnoremap <space>f :Files<CR>
 
 map <CR> o<Esc>k
+
+:autocmd InsertEnter * set cul
+:autocmd InsertLeave * set nocul
