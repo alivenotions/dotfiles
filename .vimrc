@@ -51,7 +51,7 @@ set softtabstop=2 " number of spaces in tab when editing
 set shiftwidth=2 " indents will have a width of 2
 set laststatus=2
 set expandtab " tabs are spaces!!
-set number " show line numbers
+set number relativenumber " show hybrid line numbers
 set showcmd " show command in bottom bar
 set cursorline " highlight current line
 set wildmenu " visual autocomplete for command menu
