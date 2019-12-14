@@ -72,11 +72,32 @@ set hlsearch " highlight matches
 
 " turn off search highlight
 nnoremap ,<space> :nohlsearch<CR>
+
+" save the file 
 nnoremap ,, :w<CR>
+
+" fuzzy search
 nnoremap <space>F :GFiles<CR>
 nnoremap <space>f :Files<CR>
+
+" diffs with signify
 nnoremap <space>d :SignifyDiff<CR>
 nnoremap <space>h :SignifyHunkDiff<CR>
+
+" don't use navigation keys
+nnoremap <up> <nop>
+nnoremap <down> <nop>
+inoremap <up> <nop>
+inoremap <down> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
+
+" buffers
+" Left and right can switch buffers
+nnoremap <left> :bp<CR>
+nnoremap <right> :bn<CR>
+" toggle between buffers
+nnoremap <space><space> <C-^>
 
 map <CR> o<Esc>k
 
