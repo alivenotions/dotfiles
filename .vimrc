@@ -75,6 +75,8 @@ nnoremap ,<space> :nohlsearch<CR>
 nnoremap ,, :w<CR>
 nnoremap <space>F :GFiles<CR>
 nnoremap <space>f :Files<CR>
+nnoremap <space>d :SignifyDiff<CR>
+nnoremap <space>h :SignifyHunkDiff<CR>
 
 map <CR> o<Esc>k
 
