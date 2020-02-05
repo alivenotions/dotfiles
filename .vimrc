@@ -22,6 +22,8 @@ Plug 'racer-rust/vim-racer'
 Plug 'liuchengxu/space-vim-dark'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'evanleck/vim-svelte'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 call plug#end()
 
 " Theme
