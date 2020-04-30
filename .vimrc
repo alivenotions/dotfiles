@@ -7,15 +7,14 @@ endif
 " For Mac/Linux users
 call plug#begin('~/.vim/bundle')
 Plug 'wakatime/vim-wakatime'
-Plug 'sheerun/vim-polyglot'
 Plug 'mxw/vim-jsx'
 Plug 'w0rp/ale'
 Plug 'Shougo/deoplete.nvim'
+Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'tomtom/tcomment_vim'
 Plug 'itchyny/lightline.vim'
 Plug 'mhinz/vim-signify'
 Plug 'mhartington/oceanic-next'
-Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'Quramy/tsuquyomi'
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
@@ -24,6 +23,7 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'evanleck/vim-svelte'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'sheerun/vim-polyglot'
 call plug#end()
 
 " Theme
@@ -65,9 +65,14 @@ let g:rustfmt_autosave = 1 " for rust formatting on save
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
 
-" configure signify
-" set updatetime=500
-" let g:signify_realtime = 1
+" split tabs and windows
+set splitbelow splitright
+
+" remap navigating splits
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
 
 set incsearch " search as characters are entered
 set hlsearch " highlight matches
@@ -105,3 +110,11 @@ map <CR> o<Esc>k
 
 :autocmd InsertEnter * set cul
 :autocmd InsertLeave * set nocul
+
+if executable('ocamlmerlin') && has('python3')
+  let s:ocamlmerlin = substitute(system('opam config var share'), '\n$', '', '''') . "/merlin"
+  execute "set rtp+=".s:ocamlmerlin."/vim"
+  execute "set rtp+=".s:ocamlmerlin."/vimbufsync"
+endif
+
+autocmd FileType ocaml execute "set rtp+=" . substitute(system('opam config var share'), '\n$', '', '''') . "/ocp-indent/vim/indent/ocaml.vim"
