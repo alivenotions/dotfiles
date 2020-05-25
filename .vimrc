@@ -7,27 +7,24 @@ endif
 " For Mac/Linux users
 call plug#begin('~/.vim/bundle')
 Plug 'wakatime/vim-wakatime'
-Plug 'mxw/vim-jsx'
 Plug 'w0rp/ale'
-Plug 'Shougo/deoplete.nvim'
-Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'sheerun/vim-polyglot'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tomtom/tcomment_vim'
 Plug 'itchyny/lightline.vim'
 Plug 'mhinz/vim-signify'
 Plug 'mhartington/oceanic-next'
-Plug 'Quramy/tsuquyomi'
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
 Plug 'liuchengxu/space-vim-dark'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'evanleck/vim-svelte'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'sheerun/vim-polyglot'
 call plug#end()
 
 " Theme
-syntax enable
+syntax on
 " for vim 8
 if (has("termguicolors"))
   set termguicolors
@@ -106,10 +103,35 @@ nnoremap <right> :bn<CR>
 " toggle between buffers
 nnoremap <space><space> <C-^>
 
+" paste from the yank register
+nnoremap <space>p "0p
+
+" Enter an empty line below the current line
 map <CR> o<Esc>k
 
 :autocmd InsertEnter * set cul
 :autocmd InsertLeave * set nocul
+
+" coc config https://github.com/neoclide/coc.nvim
+
+set hidden
+set cmdheight=2
+set updatetime=300
+set shortmess+=c
+if has("patch-8.1.1564")
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=yes
+endif
+
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+nmap <leader>rn <Plug>(coc-rename)
+hi CocFloating ctermbg=0
 
 if executable('ocamlmerlin') && has('python3')
   let s:ocamlmerlin = substitute(system('opam config var share'), '\n$', '', '''') . "/merlin"
