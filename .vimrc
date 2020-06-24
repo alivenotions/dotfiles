@@ -11,12 +11,15 @@ Plug 'w0rp/ale'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'sheerun/vim-polyglot'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'stefandtw/quickfix-reflector.vim'
 Plug 'tomtom/tcomment_vim'
 Plug 'itchyny/lightline.vim'
 Plug 'mhinz/vim-signify'
 Plug 'mhartington/oceanic-next'
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
+Plug 'simnalamburt/vim-mundo'
+Plug 'tpope/vim-surround'
 Plug 'liuchengxu/space-vim-dark'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -105,6 +108,8 @@ nnoremap <space><space> <C-^>
 
 " paste from the yank register
 nnoremap <space>p "0p
+
+nnoremap <F5> :MundoToggle<CR>
 
 " Enter an empty line below the current line
 map <CR> o<Esc>k
