@@ -1,3 +1,11 @@
+" Theme
+syntax on
+
+" for vim 8
+if (has("termguicolors"))
+  set termguicolors
+endif
+
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -21,20 +29,14 @@ Plug 'racer-rust/vim-racer'
 Plug 'simnalamburt/vim-mundo'
 Plug 'tpope/vim-surround'
 Plug 'liuchengxu/space-vim-dark'
+Plug 'zivyangll/git-blame.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'evanleck/vim-svelte'
 call plug#end()
 
-" Theme
-syntax on
-" for vim 8
-if (has("termguicolors"))
-  set termguicolors
-endif
-
-" color space-vim-dark
-colorscheme sublimemonokai
+color space-vim-dark
+" colorscheme sublimemonokai
 
 let g:javascript_plugin_jsdoc = 1
 set hidden
@@ -108,6 +110,8 @@ nnoremap <space><space> <C-^>
 
 " paste from the yank register
 nnoremap <space>p "0p
+
+nnoremap <Leader>s :<C-u>call gitblame#echo()<CR>
 
 nnoremap <F5> :MundoToggle<CR>
 
