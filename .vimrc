@@ -36,6 +36,8 @@ Plug 'evanleck/vim-svelte'
 Plug 'liuchengxu/vim-which-key'
 Plug 'francoiscabrol/ranger.vim'
 Plug 'tomasiser/vim-code-dark'
+Plug 'xolox/vim-misc'
+Plug 'xolox/vim-notes'
 call plug#end()
 
 " color space-vim-dark
@@ -111,6 +113,8 @@ nnoremap <left> :bp<CR>
 nnoremap <right> :bn<CR>
 " toggle between buffers
 nnoremap <space><space> <C-^>
+" Look at buffers and prepare for a number to be put in
+nnoremap <space>b :ls<CR>:b<Space>
 
 " paste from the yank register
 nnoremap <space>p "0p
