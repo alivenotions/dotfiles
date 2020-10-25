@@ -33,10 +33,14 @@ Plug 'zivyangll/git-blame.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'evanleck/vim-svelte'
+Plug 'liuchengxu/vim-which-key'
+Plug 'francoiscabrol/ranger.vim'
+Plug 'tomasiser/vim-code-dark'
 call plug#end()
 
-color space-vim-dark
+" color space-vim-dark
 " colorscheme sublimemonokai
+colorscheme codedark
 
 let g:javascript_plugin_jsdoc = 1
 set hidden
@@ -86,8 +90,8 @@ nnoremap ,<space> :nohlsearch<CR>
 nnoremap ,, :w<CR>
 
 " fuzzy search
-nnoremap <space>F :GFiles<CR>
-nnoremap <space>f :Files<CR>
+nnoremap <space>f :GFiles<CR>
+nnoremap <space>F :Files<CR>
 
 " diffs with signify
 nnoremap <space>d :SignifyDiff<CR>
@@ -138,6 +142,7 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+nmap <F2> <Plug>(coc-rename)
 
 nmap <leader>rn <Plug>(coc-rename)
 hi CocFloating ctermbg=0
