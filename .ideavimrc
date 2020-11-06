@@ -1,0 +1,29 @@
+set hlsearch
+set scrolloff=3
+set ignorecase smartcase
+set showmode
+set history=1000
+
+" paste from the yank register
+nnoremap <space>p "0p
+nnoremap <cr> o<Esc>k
+nnoremap ,, :w<CR>
+nnoremap ,<space> :nohlsearch<CR>
+nmap gcc :action CommentByLineComment<cr>
+nnoremap <C-o> :action Back<CR>
+nnoremap <C-i> :action Forward<CR>
+
+" code refactoring
+nnoremap <space>rr :action RenameElement<cr>
+
+" code navigation
+nnoremap gd :action GotoImplementation<cr>
+nnoremap gs :action GotoSuperMethod<cr>
+nnoremap gr :action FindUsages<cr>
+nnoremap gt :action GotoTest<cr>
+nnoremap <space>k :action HighlightUsagesInFile<cr>
+nnoremap \r :action RunClass<cr>
+nnoremap \R :action Run<cr>
+nnoremap \d :action DebugClass<cr>
+nnoremap \D :action Debug<cr>
+nnoremap \c :action CheckStyleCurrentFileAction<cr>
