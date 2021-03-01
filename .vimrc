@@ -1,3 +1,8 @@
+" for vim 8
+if (has("termguicolors"))
+  set termguicolors
+endif
+
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -6,10 +11,15 @@ endif
 
 " For Mac/Linux users
 call plug#begin('~/.vim/bundle')
-" Plug 'w0rp/ale'
+Plug 'w0rp/ale'
+Plug 'wakatime/vim-wakatime'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'tomtom/tcomment_vim'
+Plug 'stefandtw/quickfix-reflector.vim'
 Plug 'itchyny/lightline.vim'
+Plug 'rust-lang/rust.vim'
+Plug 'racer-rust/vim-racer'
 Plug 'sheerun/vim-polyglot'
 Plug 'mhinz/vim-signify'
 Plug 'mhartington/oceanic-next'
@@ -34,6 +44,7 @@ colorscheme codedark
 
 let g:javascript_plugin_jsdoc = 1
 set hidden
+let g:racer_cmd = "~/.cargo/bin/racer"
 
 " netrw settings
 let g:netrw_browse_split=2
@@ -41,6 +52,7 @@ let g:netrw_banner=0
 let g:netrw_altv=1
 let g:netrw_alto=1
 let g:netrw_liststyle=3
+syntax enable " enable syntax processing
 
 let g:rbpt_colorpairs = [
     \ ['brown',       'RoyalBlue3'],
@@ -69,13 +81,14 @@ set softtabstop=2 " number of spaces in tab when editing
 set shiftwidth=2 " indents will have a width of 2
 set laststatus=2 " always show the bar
 set expandtab " tabs are spaces!!
-set number " show hybrid line numbers
+set relativenumber " show hybrid line numbers
 set showcmd " show command in bottom bar
-set nocursorline " dont highlight current line
+set cursorline " dont highlight current line
 set wildmenu " visual autocomplete for command menu
 set lazyredraw " redraw only when need to
 set showmatch " highlight matching parens
 set visualbell " no sounds
+let g:rustfmt_autosave = 1 " for rust formatting on save
 
 " split tabs and windows
 set splitbelow splitright
@@ -168,3 +181,11 @@ au VimEnter * RainbowParenthesesToggle
 au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
+
+if executable('ocamlmerlin') && has('python3')	au VimEnter * RainbowParenthesesToggle
+  let s:ocamlmerlin = substitute(system('opam config var share'), '\n$', '', '''') . "/merlin"	au Syntax * RainbowParenthesesLoadRound
+  execute "set rtp+=".s:ocamlmerlin."/vim"	au Syntax * RainbowParenthesesLoadSquare
+  execute "set rtp+=".s:ocamlmerlin."/vimbufsync"	au Syntax * RainbowParenthesesLoadBraces
+endif
+
+autocmd FileType ocaml execute "set rtp+=" . substitute(system('opam config var share'), '\n$', '', '''') . "/ocp-indent/vim/indent/ocaml.vim"
