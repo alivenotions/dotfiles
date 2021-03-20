@@ -59,6 +59,7 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'junegunn/goyo.vim'
 
+Plug 'vimwiki/vimwiki'
 Plug 'mhinz/vim-signify'
 call plug#end()
 
@@ -144,9 +145,9 @@ nnoremap <Space>v :e ~/.config/nvim/init.exp2.vim<CR>
   -- Set autocommands conditional on server_capabilities
   if client.resolved_capabilities.document_highlight then
     vim.api.nvim_exec([[
-      hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
-      hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
-      hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
+      hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow guifg=Black
+      hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow guifg=Black
+      hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow guifg=Black
       augroup lsp_document_highlight
         autocmd! * <buffer>
         autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
