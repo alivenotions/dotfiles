@@ -60,7 +60,11 @@ Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'
 
 Plug 'vimwiki/vimwiki'
-Plug 'mhinz/vim-signify'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'pechorin/any-jump.vim'
+Plug 'chaoren/vim-wordmotion'
+Plug 'ojroques/nvim-lspfuzzy'
 call plug#end()
 
 " Automatically install missing plugins on startup
@@ -177,6 +181,8 @@ nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap <leader>fl <cmd>Telescope git_files<cr>
 
+lua require('lspfuzzy').setup {}
+
 " Syntax
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
@@ -238,10 +244,6 @@ nnoremap <right> :bn<CR>
 nnoremap <space><space> <C-^>
 " Look at buffers and prepare for a number to be put in
 nnoremap <space>b :ls<CR>:b<Space>
-" ,v splits vertically
-nnoremap ,v :vsp<cr>
-" ,h splits horizontally
-nnoremap ,h :split<cr>
 " double T makes a new tab
 nnoremap tt :tabnew<cr>
 " navigate tabs with H and L
@@ -255,3 +257,15 @@ nnoremap <F5> :MundoToggle<CR>
 
 " Enter an empty line below the current line
 map <CR> o<Esc>k
+
+" fugitive
+nmap <space>gh :diffget //3<CR>
+nmap <space>gf :diffget //2<CR>
+nmap <space>gs :G<CR>
+
+" Allow passing optional flags into the Rg command.
+"   Example: :Rg myterm -g '*.md'
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \ "rg --column --line-number --no-heading --color=always --smart-case " .
+  \ <q-args>, 1, fzf#vim#with_preview(), <bang>0)
