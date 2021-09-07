@@ -79,6 +79,8 @@ endif
 let g:edge_style = 'aura'
 let g:edge_enable_italic = 1
 let g:edge_disable_italic_comment = 1
+nnoremap <SPACE> <Nop>
+map <Space> <Leader>
 colorscheme edge
 
 syntax enable
@@ -182,6 +184,12 @@ nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap <leader>fl <cmd>Telescope git_files<cr>
 
 lua require('lspfuzzy').setup {}
+
+lua <<EOF
+require'nvim-web-devicons'.setup {
+  default = true;
+}
+EOF
 
 " Syntax
 lua <<EOF
