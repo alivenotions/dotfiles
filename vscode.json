@@ -1,26 +1,46 @@
 {
-    "editor.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
-    "editor.fontLigatures": true,
-    "workbench.iconTheme": "material-icon-theme",
-    "window.zoomLevel": 0,
-    "typescript.updateImportsOnFileMove.enabled": "always",
-    "vim.incsearch": true,
-    "vim.hlsearch": true,
-    "vim.leader": ",",
-    "vim.normalModeKeyBindingsNonRecursive": [
-        {
-            "before": ["<leader>", "<space>"],
-            "commands": [":nohl"]
-        },
-        {
-            "before": ["<leader>", "<leader>"],
-            "commands": ["workbench.action.files.save"]
-        },
-        {
-            "before": ["<CR>"],
-            "after": ["o", "<Esc>", "k"]
-        }
-    ],
-    "editor.minimap.enabled": false,
-    "workbench.editor.enablePreview": false
+  "telemetry.telemetryLevel": "off",
+  "workbench.iconTheme": "material-icon-theme",
+  "editor.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "vim.incsearch": true,
+  "vim.hlsearch": true,
+  "vim.leader": ",",
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<leader>", "<space>"],
+      "commands": [":nohl"]
+    },
+    {
+      "before": ["<leader>", "<leader>"],
+      "commands": ["workbench.action.files.save"]
+    },
+    {
+      "before": ["<CR>"],
+      "after": ["o", "<Esc>", "k"]
+    }
+  ],
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.minimap.enabled": false,
+  "workbench.editor.enablePreview": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "editor.tabSize": 2,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "vim.vimrc.enable": true,
+  "workbench.colorTheme": "Popping and Locking",
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 }
