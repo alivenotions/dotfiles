@@ -31,6 +31,7 @@ Plug 'tomtom/tcomment_vim'
 
 " Color schemes
 Plug 'sainnhe/edge'
+Plug 'tomasiser/vim-code-dark'
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
@@ -65,6 +66,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'pechorin/any-jump.vim'
 Plug 'chaoren/vim-wordmotion'
 Plug 'ojroques/nvim-lspfuzzy'
+Plug 'ntpeters/vim-better-whitespace'
 call plug#end()
 
 " Automatically install missing plugins on startup
@@ -81,7 +83,9 @@ let g:edge_enable_italic = 1
 let g:edge_disable_italic_comment = 1
 nnoremap <SPACE> <Nop>
 map <Space> <Leader>
+
 colorscheme edge
+" colorscheme codedark
 
 syntax enable
 filetype plugin indent on
@@ -151,9 +155,9 @@ nnoremap <Space>v :e ~/.config/nvim/init.exp2.vim<CR>
   -- Set autocommands conditional on server_capabilities
   if client.resolved_capabilities.document_highlight then
     vim.api.nvim_exec([[
-      hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow guifg=Black
-      hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow guifg=Black
-      hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow guifg=Black
+      hi LspReferenceRead cterm=bold ctermbg=red guibg=LightGrey guifg=Black
+      hi LspReferenceText cterm=bold ctermbg=red guibg=LightGreyguifg=Black
+      hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightGrey guifg=Black
       augroup lsp_document_highlight
         autocmd! * <buffer>
         autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
