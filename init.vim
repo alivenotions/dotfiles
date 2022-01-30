@@ -25,22 +25,27 @@ set nocompatible
 
 call plug#begin('~/.config/nvim/plugged')
 
-" Sensible default 
+" Sensible default
 Plug 'tpope/vim-sensible'
 Plug 'tomtom/tcomment_vim'
 
 " Color schemes
 Plug 'sainnhe/edge'
-Plug 'tomasiser/vim-code-dark'
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-lua/completion-nvim'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
 
-" Fuzzy finder
-Plug 'nvim-lua/popup.nvim'
+" For vsnip users.
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/vim-vsnip'
+
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+Plug 'lewis6991/gitsigns.nvim'
 
 " Syntax
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -51,7 +56,7 @@ Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'kyazdani42/nvim-tree.lua'
 
 " Status line
-Plug 'glepnir/galaxyline.nvim'
+Plug 'nvim-lualine/lualine.nvim'
 
 Plug 'simnalamburt/vim-mundo'
 
@@ -62,11 +67,12 @@ Plug 'junegunn/goyo.vim'
 
 Plug 'vimwiki/vimwiki'
 Plug 'tpope/vim-fugitive'
-Plug 'airblade/vim-gitgutter'
 Plug 'pechorin/any-jump.vim'
 Plug 'chaoren/vim-wordmotion'
 Plug 'ojroques/nvim-lspfuzzy'
 Plug 'ntpeters/vim-better-whitespace'
+Plug 'AndrewRadev/splitjoin.vim'
+Plug 'svermeulen/vim-yoink'
 call plug#end()
 
 " Automatically install missing plugins on startup
@@ -85,25 +91,23 @@ nnoremap <SPACE> <Nop>
 map <Space> <Leader>
 
 colorscheme edge
-" colorscheme codedark
 
 syntax enable
 filetype plugin indent on
 
-set nu rnu
 set completeopt=menuone,noinsert,noselect
 set shortmess+=c
 set cmdheight=2
 set updatetime=50
 set signcolumn=yes
 
+set number
 set tabstop=2 " number of visual spaces per TAB
 set softtabstop=2 " number of spaces in tab when editing
 set shiftwidth=2 " indents will have a width of 2
 set laststatus=2 " always show the bar
 set expandtab " tabs are spaces!!
 set smartindent
-set relativenumber " show hybrid line numbers
 set showcmd " show command in bottom bar
 set cursorline " dont highlight current line
 set wildmenu " visual autocomplete for command menu
@@ -112,6 +116,12 @@ set showmatch " highlight matching parens
 set visualbell " no sounds
 set undofile
 set undodir=~/.vim/undo
+set ignorecase
+set smartcase
+set foldmethod=indent
+set foldnestmax=10
+set nofoldenable
+set foldlevel=2
 
 set clipboard=unnamed,unnamedplus
 
@@ -120,19 +130,32 @@ augroup highlight_yank
   autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank()
 augroup END
 
-nnoremap <Space>v :e ~/.config/nvim/init.exp2.vim<CR>
+set completeopt=menu,menuone,noselect
+
+" Syntax
+lua <<EOF
+require'nvim-tree'.setup {}
+
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true
+  },
+  playground = {
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false -- Whether the query persists across vim sessions
+  }
+}
+EOF
 
 " -------------------- LSP ---------------------------------
-:lua << EOF
+lua << EOF
   local nvim_lsp = require('lspconfig')
 
   local on_attach = function(client, bufnr)
-    require('completion').on_attach()
-
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     -- Mappings
     local opts = { noremap=true, silent=true }
@@ -167,46 +190,69 @@ nnoremap <Space>v :e ~/.config/nvim/init.exp2.vim<CR>
   end
   end
 
-  local servers = {'tsserver'}
-  for _, lsp in ipairs(servers) do
-    nvim_lsp[lsp].setup {
-      on_attach = on_attach,
+  -- Setup nvim-cmp.
+  local cmp = require 'cmp'
+
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    mapping = {
+      ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+      ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+      ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+      ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+      ['<C-e>'] = cmp.mapping({
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
+      }),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    },
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'vsnip' },
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline('/', {
+    sources = {
+      { name = 'buffer' }
     }
-  end
+  })
+
+  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline(':', {
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+  })
+
+  -- Setup lspconfig.
+  local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+  nvim_lsp['tsserver'].setup {
+      capabilities = capabilities,
+      on_attach = on_attach,
+  }
+  require('lualine').setup()
 EOF
 
-" Completion
-let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-
-" Fuzzy finder
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
-nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-nnoremap <leader>fl <cmd>Telescope git_files<cr>
-
 lua require('lspfuzzy').setup {}
+lua require('gitsigns').setup()
 
 lua <<EOF
 require'nvim-web-devicons'.setup {
   default = true;
-}
-EOF
-
-" Syntax
-lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  highlight = {
-    enable = true
-  },
-  playground = {
-    enable = true,
-    disable = {},
-    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-    persist_queries = false -- Whether the query persists across vim sessions
-  }
 }
 EOF
 
@@ -215,9 +261,6 @@ nnoremap <leader>tt :NvimTreeToggle<CR>
 nnoremap <leader>tr :NvimTreeRefresh<CR>
 nnoremap <leader>tn :NvimTreeFindFile<CR>
 " NvimTreeOpen and NvimTreeClose are also available if you need them
-
-" Status line
-luafile ~/.config/nvim/eviline.lua
 
 " split tabs and windows
 set splitbelow splitright
@@ -274,6 +317,17 @@ map <CR> o<Esc>k
 nmap <space>gh :diffget //3<CR>
 nmap <space>gf :diffget //2<CR>
 nmap <space>gs :G<CR>
+
+" yoink history
+nmap <c-n> <plug>(YoinkPostPasteSwapBack)
+nmap <c-p> <plug>(YoinkPostPasteSwapForward)
+
+nmap p <plug>(YoinkPaste_p)
+nmap P <plug>(YoinkPaste_P)
+
+" Also replace the default gp with yoink paste so we can toggle paste in this case too
+nmap gp <plug>(YoinkPaste_gp)
+nmap gP <plug>(YoinkPaste_gP)
 
 " Allow passing optional flags into the Rg command.
 "   Example: :Rg myterm -g '*.md'
