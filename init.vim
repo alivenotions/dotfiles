@@ -299,11 +299,6 @@ nnoremap <right> :bn<CR>
 nnoremap <space><space> <C-^>
 " Look at buffers and prepare for a number to be put in
 nnoremap <space>b :ls<CR>:b<Space>
-" double T makes a new tab
-nnoremap tt :tabnew<cr>
-" navigate tabs with H and L
-nnoremap th :tabp<cr>
-nnoremap tl :tabn<cr>
 
 " paste from the yank register
 nnoremap <space>p "0p
