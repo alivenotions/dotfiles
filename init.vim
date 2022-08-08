@@ -31,6 +31,7 @@ Plug 'tomtom/tcomment_vim'
 
 " Color schemes
 Plug 'sainnhe/edge'
+Plug 'embark-theme/vim', { 'as': 'embark', 'branch': 'main' }
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
@@ -63,9 +64,13 @@ Plug 'simnalamburt/vim-mundo'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
-Plug 'junegunn/goyo.vim'
 
 Plug 'vimwiki/vimwiki'
+Plug 'preservim/vim-pencil'
+Plug 'dbmrq/vim-ditto'
+Plug 'junegunn/limelight.vim'
+Plug 'junegunn/goyo.vim'
+
 Plug 'tpope/vim-fugitive'
 Plug 'pechorin/any-jump.vim'
 Plug 'chaoren/vim-wordmotion'
@@ -73,6 +78,7 @@ Plug 'ojroques/nvim-lspfuzzy'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'svermeulen/vim-yoink'
+Plug 'rhysd/git-messenger.vim'
 call plug#end()
 
 " Automatically install missing plugins on startup
@@ -84,16 +90,39 @@ autocmd VimEnter *
 if has('termguicolors')
   set termguicolors
 endif
+
 let g:edge_style = 'aura'
 let g:edge_enable_italic = 1
 let g:edge_disable_italic_comment = 1
+
 nnoremap <SPACE> <Nop>
 map <Space> <Leader>
 
-colorscheme edge
+syntax on
 
-syntax enable
+" colorscheme edge
+colorscheme embark
+
 filetype plugin indent on
+
+" vim pencil
+augroup pencil
+  autocmd!
+  autocmd FileType markdown,md call pencil#init()
+  autocmd FileType text call pencil#init()
+  autocmd FileType vimwiki call pencil#init()
+augroup end
+
+" Use autocmds to check your text automatically and keep the highlighting
+" up to date (easier):
+au FileType markdown,text,tex,vimwiki DittoOn  " Turn on Ditto's autocmds
+nmap <leader>di <Plug>ToggleDitto      " Turn Ditto on and off
+let g:ditto_min_repetitions = 4
+let g:ditto_min_word_length = 5
+
+" Limelight with Goyo
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
 
 set completeopt=menuone,noinsert,noselect
 set shortmess+=c
