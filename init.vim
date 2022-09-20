@@ -51,6 +51,7 @@ Plug 'lewis6991/gitsigns.nvim'
 " Syntax
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/playground'
+Plug 'nvim-treesitter/nvim-treesitter-context'
 
 " File explorer
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
@@ -130,7 +131,7 @@ set cmdheight=2
 set updatetime=50
 set signcolumn=yes
 
-set number
+set relativenumber
 set tabstop=2 " number of visual spaces per TAB
 set softtabstop=2 " number of spaces in tab when editing
 set shiftwidth=2 " indents will have a width of 2
