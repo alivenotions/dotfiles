@@ -96,13 +96,14 @@ let g:edge_style = 'aura'
 let g:edge_enable_italic = 1
 let g:edge_disable_italic_comment = 1
 
+" remap leader
 nnoremap <SPACE> <Nop>
 map <Space> <Leader>
-
-syntax on
+tnoremap <Esc> <C-\><C-n>
 
 " colorscheme edge
 colorscheme embark
+syntax on
 
 filetype plugin indent on
 
@@ -310,8 +311,12 @@ nnoremap ,<space> :nohlsearch<CR>
 nnoremap ,, :w<CR>
 
 " fuzzy search
-nnoremap <space>f :GFiles<CR>
-nnoremap <space>F :Files<CR>
+" Tell FZF to use RG - so we can skip .gitignore files even if not using
+let $FZF_DEFAULT_COMMAND = 'rg --files --hidden'
+" If you want gitignored files:
+"let $FZF_DEFAULT_COMMAND = 'rg --files --no-ignore-vcs --hidden'
+nnoremap <space>F :GFiles<CR>
+nnoremap <space>f :Files<CR>
 
 " don't use navigation keys
 nnoremap <up> <nop>
