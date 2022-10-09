@@ -1,4 +1,5 @@
 "---- vim-plug setup  ----
+"
 let vimplug_exists=expand('~/.config/nvim/autoload/plug.vim')
 if has('win32')&&!has('win64')
   let curl_exists=expand('C:\Windows\Sysnative\curl.exe')
@@ -32,6 +33,7 @@ Plug 'tomtom/tcomment_vim'
 " Color schemes
 Plug 'sainnhe/edge'
 Plug 'embark-theme/vim', { 'as': 'embark', 'branch': 'main' }
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
@@ -65,12 +67,13 @@ Plug 'simnalamburt/vim-mundo'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
-
 Plug 'vimwiki/vimwiki'
 Plug 'preservim/vim-pencil'
 Plug 'dbmrq/vim-ditto'
 Plug 'junegunn/limelight.vim'
 Plug 'junegunn/goyo.vim'
+
+Plug 'simrat39/rust-tools.nvim'
 
 Plug 'tpope/vim-fugitive'
 Plug 'pechorin/any-jump.vim'
@@ -99,10 +102,17 @@ let g:edge_disable_italic_comment = 1
 " remap leader
 nnoremap <SPACE> <Nop>
 map <Space> <Leader>
-tnoremap <Esc> <C-\><C-n>
+
+" tnoremap <Esc> <C-\><C-n>
+if has("nvim")
+  au TermOpen * tnoremap <Esc> <c-\><c-n>
+  au FileType fzf,rg tunmap <Esc>
+endif
 
 " colorscheme edge
-colorscheme embark
+" colorscheme embark
+colorscheme tokyonight-moon
+
 syntax on
 
 filetype plugin indent on
@@ -194,7 +204,6 @@ lua << EOF
     buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
     buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
     buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-    buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
     buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
     buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
     buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
@@ -207,10 +216,10 @@ lua << EOF
     buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 
   -- Set autocommands conditional on server_capabilities
-  if client.resolved_capabilities.document_highlight then
+  if client.server_capabilities.documentHighlightProvider then
     vim.api.nvim_exec([[
       hi LspReferenceRead cterm=bold ctermbg=red guibg=LightGrey guifg=Black
-      hi LspReferenceText cterm=bold ctermbg=red guibg=LightGreyguifg=Black
+      hi LspReferenceText cterm=bold ctermbg=red guibg=LightGrey guifg=Black
       hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightGrey guifg=Black
       augroup lsp_document_highlight
         autocmd! * <buffer>
@@ -272,6 +281,10 @@ lua << EOF
   -- Setup lspconfig.
   local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
   nvim_lsp['tsserver'].setup {
+      capabilities = capabilities,
+      on_attach = on_attach,
+  }
+  nvim_lsp['rust_analyzer'].setup {
       capabilities = capabilities,
       on_attach = on_attach,
   }
