@@ -143,6 +143,7 @@ set updatetime=50
 set signcolumn=yes
 
 set relativenumber
+set number
 set tabstop=2 " number of visual spaces per TAB
 set softtabstop=2 " number of spaces in tab when editing
 set shiftwidth=2 " indents will have a width of 2
