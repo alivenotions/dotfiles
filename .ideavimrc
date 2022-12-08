@@ -1,9 +1,18 @@
-set hlsearch
+let mapleader=" "
+
+Plug 'tpope/vim-commentary'
+Plug 'machakann/vim-highlightedyank'
+let g:highlightedyank_highlight_duration = "50"
+
 set scrolloff=3
 set ignorecase smartcase
 set showmode
 set history=1000
+set incsearch " search as characters are entered
+set hlsearch " highlight matches
 
+set relativenumber
+set number
 " paste from the yank register
 nnoremap <space>p "0p
 nnoremap <cr> o<Esc>k
@@ -14,16 +23,24 @@ nnoremap <C-o> :action Back<CR>
 nnoremap <C-i> :action Forward<CR>
 
 " code refactoring
-nnoremap <space>rr :action RenameElement<cr>
+nnoremap <space>rn :action RenameElement<cr>
 
 " code navigation
 nnoremap gd :action GotoImplementation<cr>
 nnoremap gs :action GotoSuperMethod<cr>
 nnoremap gr :action FindUsages<cr>
 nnoremap gt :action GotoTest<cr>
+nnoremap K :action QuickJavaDoc<cr>
+nnoremap <space>e :action ShowErrorDescription<cr>
 nnoremap <space>k :action HighlightUsagesInFile<cr>
 nnoremap \r :action RunClass<cr>
 nnoremap \R :action Run<cr>
 nnoremap \d :action DebugClass<cr>
 nnoremap \D :action Debug<cr>
 nnoremap \c :action CheckStyleCurrentFileAction<cr>
+
+" remap navigating splits
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
