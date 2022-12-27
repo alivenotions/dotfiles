@@ -2,7 +2,16 @@ let mapleader=" "
 
 Plug 'tpope/vim-commentary'
 Plug 'machakann/vim-highlightedyank'
+Plug 'tpope/vim-surround'
+Plug 'preservim/nerdtree'
 let g:highlightedyank_highlight_duration = "50"
+
+" nerdtree config
+nnoremap <space>tt :NERDTreeToggle<cr>
+nnoremap <space>tr :NERDTreeFind<cr>
+let g:NERDTreeMapOpenSplit = "x"
+let g:NERDTreeMapPreviewSplit = "gx"
+let g:NERDTreeMapCloseDir = ""
 
 set scrolloff=3
 set ignorecase smartcase
@@ -44,3 +53,8 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
+
+" for camel/snake/kebab motion
+map w [w
+map e ]w
+map b [b
