@@ -1,5 +1,4 @@
 "---- vim-plug setup  ----
-"
 let vimplug_exists=expand('~/.config/nvim/autoload/plug.vim')
 if has('win32')&&!has('win64')
   let curl_exists=expand('C:\Windows\Sysnative\curl.exe')
@@ -29,10 +28,9 @@ call plug#begin('~/.config/nvim/plugged')
 " Sensible default
 Plug 'tpope/vim-sensible'
 Plug 'tomtom/tcomment_vim'
+Plug 'tpope/vim-surround'
 
 " Color schemes
-Plug 'sainnhe/edge'
-Plug 'embark-theme/vim', { 'as': 'embark', 'branch': 'main' }
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 
 " LSP
@@ -48,7 +46,6 @@ Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 
 Plug 'nvim-lua/plenary.nvim'
-Plug 'lewis6991/gitsigns.nvim'
 
 " Syntax
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -56,33 +53,32 @@ Plug 'nvim-treesitter/playground'
 Plug 'nvim-treesitter/nvim-treesitter-context'
 
 " File explorer
-Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'kyazdani42/nvim-tree.lua'
 
 " Status line
 Plug 'nvim-lualine/lualine.nvim'
 
-Plug 'simnalamburt/vim-mundo'
+Plug 'mbbill/undotree'
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 Plug 'vimwiki/vimwiki'
-Plug 'preservim/vim-pencil'
-Plug 'dbmrq/vim-ditto'
 Plug 'junegunn/limelight.vim'
-Plug 'junegunn/goyo.vim'
+Plug 'folke/zen-mode.nvim'
 
 Plug 'simrat39/rust-tools.nvim'
 
 Plug 'tpope/vim-fugitive'
+Plug 'rhysd/git-messenger.vim'
+Plug 'lewis6991/gitsigns.nvim'
+
 Plug 'pechorin/any-jump.vim'
 Plug 'chaoren/vim-wordmotion'
 Plug 'ojroques/nvim-lspfuzzy'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'svermeulen/vim-yoink'
-Plug 'rhysd/git-messenger.vim'
 call plug#end()
 
 " Automatically install missing plugins on startup
@@ -109,8 +105,6 @@ if has("nvim")
   au FileType fzf,rg tunmap <Esc>
 endif
 
-" colorscheme edge
-" colorscheme embark
 colorscheme tokyonight-moon
 
 syntax on
@@ -132,10 +126,6 @@ nmap <leader>di <Plug>ToggleDitto      " Turn Ditto on and off
 let g:ditto_min_repetitions = 4
 let g:ditto_min_word_length = 5
 
-" Limelight with Goyo
-autocmd! User GoyoEnter Limelight
-autocmd! User GoyoLeave Limelight!
-
 set completeopt=menuone,noinsert,noselect
 set shortmess+=c
 set cmdheight=2
@@ -146,12 +136,11 @@ set relativenumber
 set number
 set tabstop=2 " number of visual spaces per TAB
 set softtabstop=2 " number of spaces in tab when editing
+set expandtab " tabs are spaces!!
 set shiftwidth=2 " indents will have a width of 2
 set laststatus=2 " always show the bar
-set expandtab " tabs are spaces!!
 set smartindent
 set showcmd " show command in bottom bar
-set cursorline " dont highlight current line
 set wildmenu " visual autocomplete for command menu
 set lazyredraw " redraw only when need to
 set showmatch " highlight matching parens
@@ -169,7 +158,7 @@ set clipboard=unnamed,unnamedplus
 
 augroup highlight_yank
   autocmd!
-  autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank()
+  autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank({ timeout = 40 })
 augroup END
 
 set completeopt=menu,menuone,noselect
@@ -189,6 +178,10 @@ require'nvim-treesitter.configs'.setup {
     persist_queries = false -- Whether the query persists across vim sessions
   }
 }
+EOF
+
+lua << EOF
+  require("zen-mode").setup {}
 EOF
 
 " -------------------- LSP ---------------------------------
@@ -239,9 +232,6 @@ lua << EOF
       -- REQUIRED - you must specify a snippet engine
       expand = function(args)
         vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
       end,
     },
     mapping = {
@@ -280,7 +270,8 @@ lua << EOF
   })
 
   -- Setup lspconfig.
-  local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+  local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
   nvim_lsp['tsserver'].setup {
       capabilities = capabilities,
       on_attach = on_attach,
@@ -294,12 +285,6 @@ EOF
 
 lua require('lspfuzzy').setup {}
 lua require('gitsigns').setup()
-
-lua <<EOF
-require'nvim-web-devicons'.setup {
-  default = true;
-}
-EOF
 
 " File explorer
 nnoremap <leader>tt :NvimTreeToggle<CR>
@@ -352,7 +337,7 @@ nnoremap <space>b :ls<CR>:b<Space>
 " paste from the yank register
 nnoremap <space>p "0p
 
-nnoremap <F5> :MundoToggle<CR>
+nnoremap <space>u :UndotreeToggle<CR>
 
 " Enter an empty line below the current line
 map <CR> o<Esc>k
