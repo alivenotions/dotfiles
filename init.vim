@@ -40,12 +40,14 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
+Plug 'simrat39/rust-tools.nvim'
 
 " For vsnip users.
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 
 Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
 
 " Syntax
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -54,6 +56,7 @@ Plug 'nvim-treesitter/nvim-treesitter-context'
 
 " File explorer
 Plug 'kyazdani42/nvim-tree.lua'
+Plug 'nvim-tree/nvim-web-devicons'
 
 " Status line
 Plug 'nvim-lualine/lualine.nvim'
@@ -67,11 +70,10 @@ Plug 'vimwiki/vimwiki'
 Plug 'junegunn/limelight.vim'
 Plug 'folke/zen-mode.nvim'
 
-Plug 'simrat39/rust-tools.nvim'
-
 Plug 'tpope/vim-fugitive'
 Plug 'rhysd/git-messenger.vim'
 Plug 'lewis6991/gitsigns.nvim'
+Plug 'pwntester/octo.nvim'
 
 Plug 'pechorin/any-jump.vim'
 Plug 'chaoren/vim-wordmotion'
@@ -79,6 +81,11 @@ Plug 'ojroques/nvim-lspfuzzy'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'svermeulen/vim-yoink'
+
+Plug 'jbyuki/venn.nvim'
+
+Plug 'folke/todo-comments.nvim'
+Plug 'folke/trouble.nvim'
 call plug#end()
 
 " Automatically install missing plugins on startup
@@ -100,31 +107,16 @@ nnoremap <SPACE> <Nop>
 map <Space> <Leader>
 
 " tnoremap <Esc> <C-\><C-n>
-if has("nvim")
-  au TermOpen * tnoremap <Esc> <c-\><c-n>
-  au FileType fzf,rg tunmap <Esc>
-endif
+" if has("nvim")
+"   au TermOpen * tnoremap <Esc> <c-\><c-n>
+"   au FileType fzf,rg tunmap <Esc>
+" endif
 
 colorscheme tokyonight-moon
 
 syntax on
 
 filetype plugin indent on
-
-" vim pencil
-augroup pencil
-  autocmd!
-  autocmd FileType markdown,md call pencil#init()
-  autocmd FileType text call pencil#init()
-  autocmd FileType vimwiki call pencil#init()
-augroup end
-
-" Use autocmds to check your text automatically and keep the highlighting
-" up to date (easier):
-au FileType markdown,text,tex,vimwiki DittoOn  " Turn on Ditto's autocmds
-nmap <leader>di <Plug>ToggleDitto      " Turn Ditto on and off
-let g:ditto_min_repetitions = 4
-let g:ditto_min_word_length = 5
 
 set completeopt=menuone,noinsert,noselect
 set shortmess+=c
@@ -182,6 +174,16 @@ EOF
 
 lua << EOF
   require("zen-mode").setup {}
+  require("octo").setup {}
+  require("todo-comments").setup {
+    signs = false,
+    highlight = {
+      pattern = [[.*<(KEYWORDS)(\s|\(.*\))*:]],
+    },
+    search = {
+      pattern = [[\b(KEYWORDS)(\s|\(.*\))*:]],
+    },
+  }
 EOF
 
 " -------------------- LSP ---------------------------------
@@ -222,6 +224,7 @@ lua << EOF
       augroup END
     ]], false)
   end
+
   end
 
   -- Setup nvim-cmp.
@@ -276,11 +279,68 @@ lua << EOF
       capabilities = capabilities,
       on_attach = on_attach,
   }
-  nvim_lsp['rust_analyzer'].setup {
+  nvim_lsp['jdtls'].setup {
       capabilities = capabilities,
       on_attach = on_attach,
+      cmd = { 'jdtls' },
   }
+
+  local rust_tools = require("rust-tools")
+  rust_tools.setup({
+    server = {
+      on_attach = on_attach,
+      capabilities = capabilities,
+    },
+  })
   require('lualine').setup()
+EOF
+
+
+lua << EOF
+  require("trouble").setup {
+  }
+  vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>",
+    {silent = true, noremap = true}
+  )
+  vim.keymap.set("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>",
+    {silent = true, noremap = true}
+  )
+  vim.keymap.set("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>",
+    {silent = true, noremap = true}
+  )
+  vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>",
+    {silent = true, noremap = true}
+  )
+  vim.keymap.set("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>",
+    {silent = true, noremap = true}
+  )
+  vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>",
+    {silent = true, noremap = true}
+  )
+EOF
+
+" ----- venn.nvim
+lua << EOF
+  function _G.Toggle_venn()
+      local venn_enabled = vim.inspect(vim.b.venn_enabled)
+      if venn_enabled == "nil" then
+          vim.b.venn_enabled = true
+          vim.cmd[[setlocal ve=all]]
+          -- draw a line on HJKL keystokes
+          vim.api.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", {noremap = true})
+          vim.api.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", {noremap = true})
+          vim.api.nvim_buf_set_keymap(0, "n", "L", "<C-v>l:VBox<CR>", {noremap = true})
+          vim.api.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", {noremap = true})
+          -- draw a box by pressing "f" with visual selection
+          vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", {noremap = true})
+      else
+          vim.cmd[[setlocal ve=]]
+          vim.cmd[[mapclear <buffer>]]
+          vim.b.venn_enabled = nil
+      end
+  end
+
+  vim.api.nvim_set_keymap('n', '<leader>v', ":lua Toggle_venn()<CR>", { noremap = true})
 EOF
 
 lua require('lspfuzzy').setup {}
