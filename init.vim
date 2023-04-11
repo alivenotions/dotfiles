@@ -32,6 +32,8 @@ Plug 'tpope/vim-surround'
 
 " Color schemes
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+Plug 'ray-x/aurora'
+Plug 'ellisonleao/gruvbox.nvim'
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
@@ -70,6 +72,7 @@ Plug 'vimwiki/vimwiki'
 Plug 'junegunn/limelight.vim'
 Plug 'folke/zen-mode.nvim'
 
+" Git things
 Plug 'tpope/vim-fugitive'
 Plug 'rhysd/git-messenger.vim'
 Plug 'lewis6991/gitsigns.nvim'
@@ -81,6 +84,7 @@ Plug 'ojroques/nvim-lspfuzzy'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'svermeulen/vim-yoink'
+Plug 'junegunn/vim-peekaboo'
 
 Plug 'jbyuki/venn.nvim'
 
@@ -98,21 +102,18 @@ if has('termguicolors')
   set termguicolors
 endif
 
-let g:edge_style = 'aura'
-let g:edge_enable_italic = 1
-let g:edge_disable_italic_comment = 1
-
 " remap leader
 nnoremap <SPACE> <Nop>
 map <Space> <Leader>
 
-" tnoremap <Esc> <C-\><C-n>
-" if has("nvim")
-"   au TermOpen * tnoremap <Esc> <c-\><c-n>
-"   au FileType fzf,rg tunmap <Esc>
-" endif
+" let g:aurora_italic = 0     " italic
+" let g:aurora_transparent = 0     " transparent
+" let g:aurora_bold = 1     " bold
+" let g:aurora_darker = 0     " darker background
+" colorscheme aurora
 
-colorscheme tokyonight-moon
+set background=dark
+colorscheme gruvbox
 
 syntax on
 
