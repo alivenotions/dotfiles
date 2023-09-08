@@ -18,8 +18,6 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
---  You can also configure plugins after the setup call,
---    as they will be available in your neovim runtime.
 require('lazy').setup({
   -- general
   'tpope/vim-sensible',
@@ -45,7 +43,6 @@ require('lazy').setup({
   -- ctrl-r on insert, " or @ on normal
   'junegunn/vim-peekaboo',
 
-  'vimwiki/vimwiki',
   'ntpeters/vim-better-whitespace',
 
   -- File explorer
@@ -163,14 +160,20 @@ require('lazy').setup({
     },
     build = ':TSUpdate',
   },
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --
-  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
+  {
+    "epwalsh/obsidian.nvim",
+    lazy = true,
+    event = {
+      -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+      -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
+      "BufReadPre /Users/bhavdeepd/thinkspace./**.md",
+      "BufNewFile /Users/bhavdeepd/thinkspace./**.md",
+    },
+    dependencies = {
+      -- Required.
+      "nvim-lua/plenary.nvim",
+    },
+  },
 }, {})
 
 -- Set highlight on search
@@ -261,6 +264,27 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
   group = highlight_group,
   pattern = '*',
+})
+
+require('obsidian').setup({
+  dir = "~/thinkspace.",
+  completion = {
+    nvim_cmp = true,
+    min_chars = 2,
+    new_notes_location = "current_dir",
+  },
+  mappings = {
+    -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
+    ["gf"] = require("obsidian.mapping").gf_passthrough(),
+  },
+  disable_frontmatter = true,
+  follow_url_func = function(url)
+    -- Open the URL in the default web browser.
+    vim.fn.jobstart({"open", url})  -- Mac OS
+  end,
+  finder = "telescope.nvim",
+  -- Accepted values are "current", "hsplit" and "vsplit"
+  open_notes_in = "vsplit",
 })
 
 require('nvim-tree').setup {}
