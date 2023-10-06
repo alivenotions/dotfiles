@@ -45,9 +45,13 @@ require('lazy').setup({
 
   'ntpeters/vim-better-whitespace',
 
+  'jiaoshijie/undotree',
+
   -- File explorer
   'kyazdani42/nvim-tree.lua',
   'nvim-tree/nvim-web-devicons',
+
+  'wakatime/vim-wakatime',
   --  The configuration is done below. Search for lspconfig to find it below.
   {
     -- LSP Configuration & Plugins
@@ -174,6 +178,7 @@ require('lazy').setup({
       "nvim-lua/plenary.nvim",
     },
   },
+
 }, {})
 
 -- Set highlight on search
@@ -222,6 +227,9 @@ vim.o.foldnestmax = 10
 vim.o.foldenable = false
 vim.o.foldlevel = 2
 
+vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.expandtab = true
 vim.o.smartindent = true
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
@@ -289,6 +297,8 @@ require('obsidian').setup({
 
 require('nvim-tree').setup {}
 
+require('undotree').setup {}
+
 require("todo-comments").setup {
   signs = false,
   highlight = {
@@ -334,6 +344,9 @@ require('telescope').setup {
     },
   },
 }
+
+-- undotree
+vim.keymap.set('n', '<leader>ut', require('undotree').toggle, { noremap = true, silent = true })
 
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
@@ -495,6 +508,11 @@ local servers = {
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
     },
+  },
+  ocamllsp = {
+    cmd = { 'ocamllsp' },
+    filetypes = { "ocaml", "ocaml.menhir", "ocaml.interface", "ocaml.ocamllex", "reason", "dune" },
+    -- root_dir = require('lspconfig').util.root_pattern("*.opam", "esy.json", "package.json", ".git", "dune-project", "dune-workspace"),
   },
 }
 
