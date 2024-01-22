@@ -18,6 +18,8 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+--  You can also configure plugins after the setup call,
+--    as they will be available in your neovim runtime.
 require('lazy').setup({
   -- general
   'tpope/vim-sensible',
@@ -52,7 +54,12 @@ require('lazy').setup({
   'nvim-tree/nvim-web-devicons',
 
   'wakatime/vim-wakatime',
-  --  The configuration is done below. Search for lspconfig to find it below.
+  'github/copilot.vim',
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    requires = { { 'nvim-lua/plenary.nvim' } },
+  },
   {
     -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
@@ -121,16 +128,16 @@ require('lazy').setup({
     },
   },
 
-  {
-    -- Add indentation guides even on blank lines
-    'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help indent_blankline.txt`
-    opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
-    },
-  },
+  -- {
+  --   -- Add indentation guides even on blank lines
+  --   'lukas-reineke/indent-blankline.nvim',
+  --   -- Enable `lukas-reineke/indent-blankline.nvim`
+  --   -- See `:help indent_blankline.txt`
+  --   opts = {
+  --     char = '┊',
+  --     show_trailing_blankline_indent = false,
+  --   },
+  -- },
 
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
@@ -164,21 +171,28 @@ require('lazy').setup({
     },
     build = ':TSUpdate',
   },
-  {
-    "epwalsh/obsidian.nvim",
-    lazy = true,
-    event = {
-      -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-      -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
-      "BufReadPre /Users/bhavdeepd/thinkspace./**.md",
-      "BufNewFile /Users/bhavdeepd/thinkspace./**.md",
-    },
-    dependencies = {
-      -- Required.
-      "nvim-lua/plenary.nvim",
-    },
-  },
+  -- {
+  --   "epwalsh/obsidian.nvim",
+  --   lazy = true,
+  --   event = {
+  --     -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+  --     -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
+  --     "BufReadPre /Users/bhavdeepd/thinkspace./**.md",
+  --     "BufNewFile /Users/bhavdeepd/thinkspace./**.md",
+  --   },
+  --   dependencies = {
+  --     -- Required.
+  --     "nvim-lua/plenary.nvim",
+  --   },
+  -- },
 
+  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
+  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
+  --    up-to-date with whatever is in the kickstart repo.
+  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
+  --
+  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
+  -- { import = 'custom.plugins' },
 }, {})
 
 -- Set highlight on search
@@ -229,10 +243,14 @@ vim.o.foldlevel = 2
 
 vim.o.tabstop = 4
 vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
 vim.o.expandtab = true
 vim.o.smartindent = true
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
+vim.opt["guicursor"] = ""
+
+vim.g.copilot_assume_mapped = true
 
 -- Keymaps for better default experience
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
@@ -264,6 +282,9 @@ vim.keymap.set('n', '<leader>gs', '<cmd>G<cr>')
 -- maximize current split or return to previous
 vim.keymap.set('n', '<C-w>m', vim.cmd.MaximizerToggle)
 
+-- toggle last buffer
+vim.keymap.set('n', '<C-^', '<leader><leader>')
+
 -- [[ Highlight on yank ]]
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -274,26 +295,36 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
-require('obsidian').setup({
-  dir = "~/thinkspace.",
-  completion = {
-    nvim_cmp = true,
-    min_chars = 2,
-    new_notes_location = "current_dir",
-  },
-  mappings = {
-    -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
-    ["gf"] = require("obsidian.mapping").gf_passthrough(),
-  },
-  disable_frontmatter = true,
-  follow_url_func = function(url)
-    -- Open the URL in the default web browser.
-    vim.fn.jobstart({"open", url})  -- Mac OS
-  end,
-  finder = "telescope.nvim",
-  -- Accepted values are "current", "hsplit" and "vsplit"
-  open_notes_in = "vsplit",
-})
+local harpoon = require 'harpoon'
+harpoon:setup()
+vim.keymap.set("n", "<leader>h", function() harpoon:list():append() end)
+vim.keymap.set("n", "<C-a>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+
+vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end)
+vim.keymap.set("n", "<C-j>", function() harpoon:list():select(2) end)
+vim.keymap.set("n", "<C-k>", function() harpoon:list():select(3) end)
+vim.keymap.set("n", "<C-l>", function() harpoon:list():select(4) end)
+
+-- require('obsidian').setup({
+--   dir = "~/thinkspace.",
+--   completion = {
+--     nvim_cmp = true,
+--     min_chars = 2,
+--     new_notes_location = "current_dir",
+--   },
+--   mappings = {
+--     -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
+--     ["gf"] = require("obsidian.mapping").gf_passthrough(),
+--   },
+--   disable_frontmatter = true,
+--   follow_url_func = function(url)
+--     -- Open the URL in the default web browser.
+--     vim.fn.jobstart({"open", url})  -- Mac OS
+--   end,
+--   finder = "telescope.nvim",
+--   -- Accepted values are "current", "hsplit" and "vsplit"
+--   open_notes_in = "vsplit",
+-- })
 
 require('nvim-tree').setup {}
 
@@ -372,7 +403,7 @@ vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = 
 -- [[ Configure Treesitter ]]
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'java' },
+  ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'java', 'zig', 'ocaml' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
@@ -469,7 +500,7 @@ local on_attach = function(_, bufnr)
 
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+  nmap('<leader>k', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -498,6 +529,7 @@ local servers = {
   html = { filetypes = { 'html', 'twig', 'hbs'} },
   tailwindcss = {},
   cssls = {},
+  zls = {},
 
   jdtls = {
     cmd = { 'jdtls' },
@@ -513,6 +545,24 @@ local servers = {
     cmd = { 'ocamllsp' },
     filetypes = { "ocaml", "ocaml.menhir", "ocaml.interface", "ocaml.ocamllex", "reason", "dune" },
     -- root_dir = require('lspconfig').util.root_pattern("*.opam", "esy.json", "package.json", ".git", "dune-project", "dune-workspace"),
+  },
+  rust_analyzer = {
+    cmd = { 'rust-analyzer' },
+    filetypes = { 'rust' },
+    settings = {
+      ['rust-analyzer'] = {
+        assist = {
+          importGranularity = 'module',
+          importPrefix = 'by_self',
+        },
+        cargo = {
+          loadOutDirsFromCheck = true,
+        },
+        procMacro = {
+          enable = true,
+        },
+      },
+    },
   },
 }
 
