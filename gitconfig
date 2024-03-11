@@ -6,6 +6,8 @@ useConfigOnly = true
   please = push --force-with-lease
   oops = commit --amend --no-edit
   rank = shortlog -s -n --no-merges
+  jump = "!$(brew --prefix git)/share/git-core/contrib/git-jump/git-jump"
+  real-blame = blame -w -C -C -C
 [core]
 	pager = diff-so-fancy | less --tabs=4 -RFX
 [interactive]
@@ -25,3 +27,13 @@ useConfigOnly = true
 	old = red bold
 	new = green bold
 	whitespace = red reverse
+[push]
+	autoSetupRemote = true
+[credential]
+	helper = osxkeychain
+[rerere]
+	enable = true
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
