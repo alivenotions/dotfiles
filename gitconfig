@@ -8,10 +8,24 @@ useConfigOnly = true
   rank = shortlog -s -n --no-merges
   jump = "!$(brew --prefix git)/share/git-core/contrib/git-jump/git-jump"
   real-blame = blame -w -C -C -C
+  dft = difftool
+  dlog = "!f() { : git log ; GIT_EXTERNAL_DIFF=difft git log -p --ext-diff $@; }; f"
 [core]
 	pager = diff-so-fancy | less --tabs=4 -RFX
+	excludesfile = /Users/bhavdeepd/.gitignore
 [interactive]
 	diffFilter = diff-so-fancy --patch
+[diff]
+	algorithm = histogram
+        tool = difftastic
+[difftool]
+        prompt = false
+
+[difftool "difftastic"]
+        cmd = difft "$LOCAL" "$REMOTE"
+
+[pager]
+        difftool = true
 [color]
 	ui = true
 [color "diff-highlight"]
@@ -33,7 +47,5 @@ useConfigOnly = true
 	helper = osxkeychain
 [rerere]
 	enable = true
-[column]
-	ui = auto
 [branch]
 	sort = -committerdate
