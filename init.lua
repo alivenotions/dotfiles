@@ -23,7 +23,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- general
   'tpope/vim-sensible',
-  'tomtom/tcomment_vim',
+  -- 'tomtom/tcomment_vim',
   'folke/todo-comments.nvim',
   'tpope/vim-surround',
   -- Git related plugins
@@ -39,7 +39,38 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
   -- Find all the errors and warning in the project
-  'folke/trouble.nvim',
+  {
+    'folke/trouble.nvim',
+    opts = {},   -- for default options, refer to the configuration section for custom setup.
+    cmd = "Trouble",
+    keys = {
+      {
+        "<leader>xx",
+        "<cmd>Trouble diagnostics toggle<cr>",
+        desc = "Diagnostics (Trouble)",
+      },
+      {
+        "<leader>xb",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)",
+      },
+      {
+        "<leader>cs",
+        "<cmd>Trouble symbols toggle focus=false<cr>",
+        desc = "Symbols (Trouble)",
+      },
+      {
+        "<leader>cl",
+        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        desc = "LSP Definitions / references / ... (Trouble)",
+      },
+      {
+        "<leader>xQ",
+        "<cmd>Trouble qflist toggle<cr>",
+        desc = "Quickfix List (Trouble)",
+      },
+    },
+  },
   -- create ascii diagrams
   'jbyuki/venn.nvim',
   -- ctrl-r on insert, " or @ on normal
@@ -49,9 +80,13 @@ require('lazy').setup({
 
   'jiaoshijie/undotree',
 
+  'chaoren/vim-wordmotion',
+
   -- File explorer
   'kyazdani42/nvim-tree.lua',
   'nvim-tree/nvim-web-devicons',
+
+  'dmmulroy/ts-error-translator.nvim',
 
   'wakatime/vim-wakatime',
   'github/copilot.vim',
@@ -70,7 +105,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+      { 'j-hui/fidget.nvim',       tag = 'legacy', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
@@ -98,7 +133,8 @@ require('lazy').setup({
     'lewis6991/gitsigns.nvim',
     opts = {
       on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
+        vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk,
+          { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
         vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
         vim.keymap.set('n', '<leader>ph', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[P]review [H]unk' })
       end,
@@ -106,11 +142,12 @@ require('lazy').setup({
   },
 
   {
-    -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
+    "folke/tokyonight.nvim",
+    lazy = false,
     priority = 1000,
+    opts = {},
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme 'tokyonight-moon'
     end,
   },
 
@@ -171,28 +208,6 @@ require('lazy').setup({
     },
     build = ':TSUpdate',
   },
-  -- {
-  --   "epwalsh/obsidian.nvim",
-  --   lazy = true,
-  --   event = {
-  --     -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-  --     -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
-  --     "BufReadPre /Users/bhavdeepd/thinkspace./**.md",
-  --     "BufNewFile /Users/bhavdeepd/thinkspace./**.md",
-  --   },
-  --   dependencies = {
-  --     -- Required.
-  --     "nvim-lua/plenary.nvim",
-  --   },
-  -- },
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --
-  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
 }, {})
 
 -- Set highlight on search
@@ -297,7 +312,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 local harpoon = require 'harpoon'
 harpoon:setup()
-vim.keymap.set("n", "<leader>h", function() harpoon:list():append() end)
+vim.keymap.set("n", "<leader>h", function() harpoon:list():add() end)
 vim.keymap.set("n", "<C-a>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
 
 vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end)
@@ -305,28 +320,12 @@ vim.keymap.set("n", "<C-j>", function() harpoon:list():select(2) end)
 vim.keymap.set("n", "<C-k>", function() harpoon:list():select(3) end)
 vim.keymap.set("n", "<C-l>", function() harpoon:list():select(4) end)
 
--- require('obsidian').setup({
---   dir = "~/thinkspace.",
---   completion = {
---     nvim_cmp = true,
---     min_chars = 2,
---     new_notes_location = "current_dir",
---   },
---   mappings = {
---     -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
---     ["gf"] = require("obsidian.mapping").gf_passthrough(),
---   },
---   disable_frontmatter = true,
---   follow_url_func = function(url)
---     -- Open the URL in the default web browser.
---     vim.fn.jobstart({"open", url})  -- Mac OS
---   end,
---   finder = "telescope.nvim",
---   -- Accepted values are "current", "hsplit" and "vsplit"
---   open_notes_in = "vsplit",
--- })
+vim.keymap.set("n", "<leader>ih", "<cmd>lua vim.lsp.inlay_hint.enable()<CR>")
+vim.keymap.set("n", "<leader>uh", "<cmd>lua vim.lsp.inlay_hint.enable(false)<CR>")
 
 require('nvim-tree').setup {}
+
+require("ts-error-translator").setup()
 
 require('undotree').setup {}
 
@@ -339,27 +338,6 @@ require("todo-comments").setup {
     pattern = [[\b(KEYWORDS)(\s|\(.*\))*:]],
   },
 }
-
--- [[Configuring trouble ]]
-require("trouble").setup {}
-vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>",
-  {silent = true, noremap = true}
-)
-vim.keymap.set("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>",
-  {silent = true, noremap = true}
-)
-vim.keymap.set("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>",
-  {silent = true, noremap = true}
-)
-vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>",
-  {silent = true, noremap = true}
-)
-vim.keymap.set("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>",
-  {silent = true, noremap = true}
-)
-vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>",
-  {silent = true, noremap = true}
-)
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
@@ -526,7 +504,7 @@ end
 --  define the property 'filetypes' to the map in question.
 local servers = {
   tsserver = {},
-  html = { filetypes = { 'html', 'twig', 'hbs'} },
+  html = { filetypes = { 'html', 'twig', 'hbs' } },
   tailwindcss = {},
   cssls = {},
   zls = {},
@@ -640,22 +618,22 @@ cmp.setup {
 }
 
 function _G.Toggle_venn()
-    local venn_enabled = vim.inspect(vim.b.venn_enabled)
-    if venn_enabled == "nil" then
-        vim.b.venn_enabled = true
-        vim.cmd[[setlocal ve=all]]
-        -- draw a line on HJKL keystokes
-        vim.api.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", {noremap = true})
-        vim.api.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", {noremap = true})
-        vim.api.nvim_buf_set_keymap(0, "n", "L", "<C-v>l:VBox<CR>", {noremap = true})
-        vim.api.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", {noremap = true})
-        -- draw a box by pressing "f" with visual selection
-        vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", {noremap = true})
-    else
-        vim.cmd[[setlocal ve=]]
-        vim.cmd[[mapclear <buffer>]]
-        vim.b.venn_enabled = nil
-    end
+  local venn_enabled = vim.inspect(vim.b.venn_enabled)
+  if venn_enabled == "nil" then
+    vim.b.venn_enabled = true
+    vim.cmd [[setlocal ve=all]]
+    -- draw a line on HJKL keystokes
+    vim.api.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", { noremap = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", { noremap = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "L", "<C-v>l:VBox<CR>", { noremap = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", { noremap = true })
+    -- draw a box by pressing "f" with visual selection
+    vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", { noremap = true })
+  else
+    vim.cmd [[setlocal ve=]]
+    vim.cmd [[mapclear <buffer>]]
+    vim.b.venn_enabled = nil
+  end
 end
 
-vim.api.nvim_set_keymap('n', '<leader>v', ":lua Toggle_venn()<CR>", { noremap = true})
+vim.api.nvim_set_keymap('n', '<leader>v', ":lua Toggle_venn()<CR>", { noremap = true })
