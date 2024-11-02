@@ -1,0 +1,9 @@
+\set HISTFILE ~/.psql_history- :DBNAME
+\x auto
+\set COMP_KEYWORD_CASE upper
+\set eab EXPLAIN (ANALYZE, BUFFERS)
+\echo 🧐 🐘 postgres_dba 6.0 installed. Use ":dba" to see menu
+\set dba '\\i ~/postgres_dba/start.psql'
+\setenv PAGER pspg
+\pset border 2
+\pset linestyle unicode
