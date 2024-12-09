@@ -10,9 +10,11 @@ useConfigOnly = true
   real-blame = blame -w -C -C -C
   dft = difftool
   dlog = "!f() { : git log ; GIT_EXTERNAL_DIFF=difft git log -p --ext-diff $@; }; f"
+  hide-file = update-index --skip-worktree
+  show-hidden = "!git ls-files -v . | grep ^S"
+  unhide-file = update-index --no-skip-worktree
 [core]
 	pager = diff-so-fancy | less --tabs=4 -RFX
-	excludesfile = /Users/bhavdeepd/.gitignore
 [interactive]
 	diffFilter = diff-so-fancy --patch
 [diff]

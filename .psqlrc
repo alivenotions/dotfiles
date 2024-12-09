@@ -7,3 +7,4 @@
 \setenv PAGER pspg
 \pset border 2
 \pset linestyle unicode
+\setenv PSPG_THEME 3

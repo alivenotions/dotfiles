@@ -41,7 +41,7 @@ require('lazy').setup({
   -- Find all the errors and warning in the project
   {
     'folke/trouble.nvim',
-    opts = {},   -- for default options, refer to the configuration section for custom setup.
+    opts = {}, -- for default options, refer to the configuration section for custom setup.
     cmd = "Trouble",
     keys = {
       {
@@ -169,6 +169,11 @@ require('lazy').setup({
     },
   },
 
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre", -- this will only start session saving when an actual file was opened
+  },
+
   -- {
   --   -- Add indentation guides even on blank lines
   --   'lukas-reineke/indent-blankline.nvim',
@@ -205,12 +210,29 @@ require('lazy').setup({
   },
 
   {
+    "danielfalk/smart-open.nvim",
+    branch = "0.2.x",
+    config = function()
+      require("telescope").load_extension("smart_open")
+    end,
+    dependencies = {
+      "kkharji/sqlite.lua",
+      -- Only required if using match_algorithm fzf
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    },
+  },
+
+  {
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
     build = ':TSUpdate',
+  },
+  {
+    'stevearc/conform.nvim',
+    opts = {},
   },
 }, {})
 
@@ -356,6 +378,12 @@ require('telescope').setup {
       },
     },
   },
+  extensions = {
+    smart_open = {
+      match_algorithm = "fzf",
+      cwd_only = true,
+    },
+  },
 }
 
 -- undotree
@@ -376,7 +404,10 @@ end, { desc = '[/] Fuzzily search in current buffer' })
 -- let $FZF_DEFAULT_COMMAND = 'rg --files --no-ignore-vcs --hidden'
 vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden'
 vim.keymap.set('n', '<leader>F', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-vim.keymap.set('n', '<leader>f', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+-- vim.keymap.set('n', '<leader>f', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set("n", "<leader>f", function()
+  require("telescope").extensions.smart_open.smart_open()
+end, { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
@@ -385,7 +416,7 @@ vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = 
 -- [[ Configure Treesitter ]]
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'java', 'zig', 'ocaml' },
+  ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'java', 'zig' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
@@ -496,20 +527,24 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
--- Enable the following language servers
---  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
---
 --  Add any additional override configuration in the following tables. They will be passed to
 --  the `settings` field of the server config. You must look up that documentation yourself.
 --
 --  If you want to override the default filetypes that your language server will attach to you can
 --  define the property 'filetypes' to the map in question.
 local servers = {
-  tsserver = {},
+  ts_ls = {},
   html = { filetypes = { 'html', 'twig', 'hbs' } },
   tailwindcss = {},
   cssls = {},
-  zls = {},
+  zls = {
+    filetypes = { 'zig' },
+    settings = {
+      zls = {
+        enable_build_on_save = true,
+      }
+    }
+  },
 
   jdtls = {
     cmd = { 'jdtls' },
@@ -520,11 +555,6 @@ local servers = {
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
     },
-  },
-  ocamllsp = {
-    cmd = { 'ocamllsp' },
-    filetypes = { "ocaml", "ocaml.menhir", "ocaml.interface", "ocaml.ocamllex", "reason", "dune" },
-    -- root_dir = require('lspconfig').util.root_pattern("*.opam", "esy.json", "package.json", ".git", "dune-project", "dune-workspace"),
   },
   rust_analyzer = {
     cmd = { 'rust-analyzer' },
@@ -546,6 +576,23 @@ local servers = {
   },
 }
 
+-- formatter
+require("conform").setup({
+  formatters_by_ft = {
+    lua = { "stylua" },
+    -- Conform will run multiple formatters sequentially
+    python = { "isort", "black" },
+    -- You can customize some of the format options for the filetype (:help conform.format)
+    rust = { "rustfmt", lsp_format = "fallback" },
+    -- Conform will run the first available formatter
+    javascript = { "prettierd", "prettier", stop_after_first = true },
+  },
+  format_on_save = {
+    -- These options will be passed to conform.format()
+    timeout_ms = 500,
+    lsp_format = "fallback",
+  },
+})
 -- Setup neovim lua configuration
 require('neodev').setup()
 
