@@ -82,8 +82,6 @@ require('lazy').setup({
 
   'ntpeters/vim-better-whitespace',
 
-  'jiaoshijie/undotree',
-
   'chaoren/vim-wordmotion',
 
   -- File explorer
@@ -174,17 +172,6 @@ require('lazy').setup({
     event = "BufReadPre", -- this will only start session saving when an actual file was opened
   },
 
-  -- {
-  --   -- Add indentation guides even on blank lines
-  --   'lukas-reineke/indent-blankline.nvim',
-  --   -- Enable `lukas-reineke/indent-blankline.nvim`
-  --   -- See `:help indent_blankline.txt`
-  --   opts = {
-  --     char = '┊',
-  --     show_trailing_blankline_indent = false,
-  --   },
-  -- },
-
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
@@ -222,6 +209,37 @@ require('lazy').setup({
     },
   },
 
+  {
+    "debugloop/telescope-undo.nvim",
+    dependencies = {
+      {
+        "nvim-telescope/telescope.nvim",
+        dependencies = { "nvim-lua/plenary.nvim" },
+      },
+    },
+    keys = {
+      {
+        "<leader>ut",
+        "<cmd>Telescope undo<cr>",
+        desc = "undo history",
+      }
+    },
+    opts = {
+      extensions = {
+        undo = {
+          side_by_side = true,
+          layout_strategy = "vertical",
+          layout_config = {
+            preview_height = 0.8,
+          },
+        },
+      },
+    },
+    config = function(_, opts)
+      require("telescope").setup(opts)
+      require("telescope").load_extension("undo")
+    end,
+  },
   {
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -301,12 +319,21 @@ vim.keymap.set({ 'n', 'v' }, '<leader>tt', '<cmd>NvimTreeToggle<cr>')
 vim.keymap.set({ 'n', 'v' }, '<leader>tr', '<cmd>NvimTreeRefresh<cr>')
 vim.keymap.set({ 'n', 'v' }, '<leader>tn', '<cmd>NvimTreeFindFile<cr>')
 
--- remap navigating splits
--- commenting out for now because c-k is kinda nice
--- vim.keymap.set('n', '<C-h>', '<C-w>h')
--- vim.keymap.set('n', '<C-j>', '<C-w>j')
--- vim.keymap.set('n', '<C-k>', '<C-w>k')
--- vim.keymap.set('n', '<C-l>', '<C-w>l')
+-- terminal navigation
+vim.api.nvim_create_autocmd('TermOpen', {
+  group = vim.api.nvim_create_augroup('custom-term-open', { clear = true }),
+  callback = function()
+    vim.opt.number = false
+    vim.opt.relativenumber = false
+  end,
+})
+
+vim.keymap.set("n", "<space>st", function()
+  vim.cmd.vnew()
+  vim.cmd.term()
+  vim.cmd.wincmd("J")
+  vim.api.nvim_win_set_height(0, 15)
+end)
 
 -- turn off search highlight
 vim.keymap.set('n', ',<leader>', '<cmd>nohl<cr>')
@@ -353,8 +380,6 @@ require('nvim-tree').setup {}
 
 require("ts-error-translator").setup()
 
-require('undotree').setup {}
-
 require("todo-comments").setup {
   signs = false,
   highlight = {
@@ -387,10 +412,9 @@ require('telescope').setup {
 }
 
 -- undotree
-vim.keymap.set('n', '<leader>ut', require('undotree').toggle, { noremap = true, silent = true })
+-- vim.keymap.set('n', '<leader>ut', vim.cmd.UndoTreeToggle, { noremap = true, silent = true })
 
 -- See `:help telescope.builtin`
-vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader>b', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
@@ -406,7 +430,7 @@ vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden'
 vim.keymap.set('n', '<leader>F', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
 -- vim.keymap.set('n', '<leader>f', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set("n", "<leader>f", function()
-  require("telescope").extensions.smart_open.smart_open()
+  require("telescope").extensions.smart_open.smart_open({ cwd_only = true })
 end, { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
