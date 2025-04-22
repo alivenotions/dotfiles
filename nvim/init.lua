@@ -143,13 +143,35 @@ require('lazy').setup({
     },
   },
 
+  -- {
+  --   "folke/tokyonight.nvim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   opts = {},
+  --   config = function()
+  --     vim.cmd.colorscheme 'tokyonight-moon'
+  --   end,
+  -- },
   {
-    "folke/tokyonight.nvim",
+    "scottmckendry/cyberdream.nvim",
     lazy = false,
     priority = 1000,
-    opts = {},
     config = function()
-      vim.cmd.colorscheme 'tokyonight-moon'
+      require("cyberdream").setup({
+        variant = "auto",
+        saturation = 0.8,
+        cache = true,
+        borderless_pickers = true,
+        overrides = function(c)
+          return {
+            CursorLine = { bg = c.bg },
+            CursorLineNr = { fg = c.magenta },
+            Comment = { fg = c.green, italic = true, bg = "NONE" },
+          }
+        end,
+      })
+
+      vim.cmd("colorscheme cyberdream")
     end,
   },
 
@@ -159,10 +181,21 @@ require('lazy').setup({
     -- See `:help lualine.txt`
     opts = {
       options = {
-        icons_enabled = false,
-        theme = 'onedark',
+        icons_enabled = true,
+        theme = 'auto',
         component_separators = '|',
         section_separators = '',
+      },
+      sections = {
+        lualine_a = {},
+        lualine_b = { 'branch', 'diagnostics' },
+        lualine_x = { 'encoding',
+          {
+            'filetype',
+            colored = true,
+            icon_only = true,
+          }
+        },
       },
     },
   },
@@ -328,6 +361,7 @@ vim.api.nvim_create_autocmd('TermOpen', {
   end,
 })
 
+-- open terminal in a split
 vim.keymap.set("n", "<space>st", function()
   vim.cmd.vnew()
   vim.cmd.term()
@@ -351,9 +385,9 @@ vim.keymap.set('n', '<leader>gs', '<cmd>G<cr>')
 vim.keymap.set('n', '<C-w>m', vim.cmd.MaximizerToggle)
 
 -- toggle last buffer
-vim.keymap.set('n', '<C-^', '<leader><leader>')
+vim.keymap.set('n', '<space><space>', '<C-^>')
 
--- [[ Highlight on yank ]]
+-- highlight on yank
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
@@ -598,6 +632,14 @@ local servers = {
       },
     },
   },
+  ols = {
+    init_options = {
+      checker_args = "-strict-style",
+      collections = {
+        { name = "shared", path = vim.fn.expand('$HOME/.odin') }
+      },
+    },
+  },
 }
 
 -- formatter
@@ -638,6 +680,7 @@ mason_lspconfig.setup_handlers {
       on_attach = on_attach,
       settings = servers[server_name],
       filetypes = (servers[server_name] or {}).filetypes,
+      init_options = (servers[server_name] or {}).init_options,
     }
   end
 }
