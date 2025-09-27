@@ -1,10 +1,9 @@
 -- Keymaps for better default experience
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
--- keymaps for file explorer
-vim.keymap.set({ 'n', 'v' }, '<leader>tt', '<cmd>NvimTreeToggle<cr>')
-vim.keymap.set({ 'n', 'v' }, '<leader>tr', '<cmd>NvimTreeRefresh<cr>')
-vim.keymap.set({ 'n', 'v' }, '<leader>tn', '<cmd>NvimTreeFindFile<cr>')
+-- Oil.nvim keymaps
+vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+vim.keymap.set("n", "<leader>-", "<CMD>Oil --float<CR>", { desc = "Open parent directory in floating window" })
 
 -- open terminal in a split
 vim.keymap.set("n", "<space>st", function()
@@ -92,3 +91,4 @@ function _G.Toggle_venn()
 end
 
 vim.api.nvim_set_keymap('n', '<leader>v', ":lua Toggle_venn()<CR>", { noremap = true })
+

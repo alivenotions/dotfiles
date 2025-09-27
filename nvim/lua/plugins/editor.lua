@@ -10,10 +10,35 @@ return {
     -- Detect tabstop and shiftwidth automatically
     'tpope/vim-sleuth',
 
+    {
+        'folke/flash.nvim',
+        event = "VeryLazy",
+        ---@type Flash.Config
+        opts = {},
+        -- stylua: ignore
+        keys = {
+            { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
+            { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+            { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+            { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+            { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
+        },
+    },
+
     -- Find all the errors and warning in the project
     {
         'folke/trouble.nvim',
-        opts = {}, -- for default options, refer to the configuration section for custom setup.
+        opts = {
+            focus = true,   -- Focus trouble window when opened
+            follow = true,  -- Follow the current cursor position
+            restore = true, -- Restore window position when closing
+            preview = {
+                type = "split",
+                relative = "win",
+                position = "right",
+                size = 0.3,
+            },
+        },
         cmd = "Trouble",
         keys = {
             {
@@ -40,6 +65,21 @@ return {
                 "<leader>xQ",
                 "<cmd>Trouble qflist toggle<cr>",
                 desc = "Quickfix List (Trouble)",
+            },
+            {
+                "<leader>xl",
+                "<cmd>Trouble loclist toggle<cr>",
+                desc = "Location List (Trouble)",
+            },
+            {
+                "<leader>xr",
+                "<cmd>Trouble lsp_references toggle<cr>",
+                desc = "LSP References (Trouble)",
+            },
+            {
+                "<leader>xd",
+                "<cmd>Trouble lsp_definitions toggle<cr>",
+                desc = "LSP Definitions (Trouble)",
             },
         },
     },
@@ -155,5 +195,36 @@ return {
         config = function()
             require("claude-code").setup()
         end
+    },
+
+    -- Test runner with inline results
+    {
+        "nvim-neotest/neotest",
+        dependencies = {
+            "nvim-neotest/nvim-nio",
+            "nvim-lua/plenary.nvim",
+            "antoinemadec/FixCursorHold.nvim",
+            "nvim-treesitter/nvim-treesitter",
+            -- Test adapters
+            "nvim-neotest/neotest-jest",
+            "lawrence-laz/neotest-zig",
+            "rcasia/neotest-java",
+        },
+        config = function()
+            require("neotest").setup({
+                adapters = {
+                    require("neotest-jest"),
+                    require("neotest-zig"),
+                    require("neotest-java"),
+                },
+            })
+        end,
+        keys = {
+            { "<leader>tn", function() require("neotest").run.run() end,                     desc = "Run nearest test" },
+            { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end,   desc = "Run file tests" },
+            { "<leader>ts", function() require("neotest").summary.toggle() end,              desc = "Toggle test summary" },
+            { "<leader>to", function() require("neotest").output.open({ enter = true }) end, desc = "Open test output" },
+        },
     }
 }
+

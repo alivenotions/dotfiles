@@ -86,9 +86,6 @@ require('nvim-treesitter.configs').setup {
     },
 }
 
--- Nvim-tree setup
-require('nvim-tree').setup {}
-
 -- TS Error translator setup
 require("ts-error-translator").setup()
 
@@ -120,3 +117,5 @@ require("conform").setup({
         lsp_format = "fallback",
     },
 })
+
+require("oil-git-status").setup()

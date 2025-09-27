@@ -20,4 +20,5 @@ require('lazy').setup({
     require('plugins.editor'),
     require('plugins.lsp'),
     require('plugins.git'),
+    require('plugins.session'),
 }, {})

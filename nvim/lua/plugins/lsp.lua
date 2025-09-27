@@ -8,7 +8,7 @@ return {
             'williamboman/mason-lspconfig.nvim',
 
             -- Useful status updates for LSP
-            { 'j-hui/fidget.nvim', opts = {} },
+            { 'j-hui/fidget.nvim',       opts = {} },
 
             -- Additional lua configuration, makes nvim stuff amazing!
             'folke/lazydev.nvim',
@@ -86,15 +86,15 @@ return {
                 ts_ls = {},
                 rust_analyzer = {},
                 pyright = {},
+                jdtls = {
+                    cmd = { 'jdtls' }
+                },
+                zls = {
+                    cmd = { "/Users/bhavdeepd/zls/zls" },
+                    filetypes = { "zig" },
+                },
                 -- Add more servers as needed
             }
-
-            -- Ensure the servers are installed but don't auto-configure
-            require("mason-lspconfig").setup({
-                ensure_installed = vim.tbl_keys(servers),
-                automatic_installation = false,
-                handlers = {}, -- Disable all automatic handlers
-            })
 
             -- Setup each server individually to avoid duplicates
             for server_name, server_config in pairs(servers) do
@@ -108,6 +108,11 @@ return {
                     require("lspconfig")[server_name].setup(server)
                 end
             end
+
+            -- Ensure the servers are installed but don't auto-configure
+            require("mason-lspconfig").setup({
+                ensure_installed = vim.tbl_keys(servers),
+            })
         end
     },
 
